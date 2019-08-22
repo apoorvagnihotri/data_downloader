@@ -94,6 +94,11 @@ for j, fnames_sel in enumerate(final):
                 finished[i] = True
             
             else:
+                if not os.path.exists(base_path):
+                    os.makedirs(base_path)
+                with open(f"{base_path}/{j*n + i}.txt","w") as f:
+                    f.write(stdout)
+                finished[i] = True
                 print (f"Link: '{fname_sel}' gave the error code of {rc}, check: logs/{j*n + i}.txt")
         if allclose:
             break
