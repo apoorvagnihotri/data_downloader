@@ -2,18 +2,6 @@ import pandas as pd
 import time
 import os
 
-def get_df(fname):
-    cluster_1 = pd.read_csv(fname, index_col=0)
-    cluster_1.drop(columns=['cluster_id'], inplace=True)
-
-    df_1 = cluster_1.drop(columns=['PM25_Concentration','station_id', 'time_met'])
-    df_1 = df_1 - df_1.min()
-    df_1 = df_1/df_1.max()
-    df_1['PM2.5']= cluster_1['PM25_Concentration']
-    df_1['station_id'] = cluster_1['station_id']
-    df_1['time_met'] = cluster_1['time_met']
-    return df_1
-
 def write_log(proc, saving_loc):
     '''helpful for writing logs'''
     stdout = str(proc.stdout.read())
@@ -42,12 +30,10 @@ class ProcBucket:
         '''Returns the index of free slot else, returns None'''
         for i in range(self.num):
             if self.procs[i] is None: # empty
-#jjj                print("slot retured beacause empty", i)
                 return i
             else: # pro alloted
                 rc = self.procs[i].poll()
                 if rc is None: # running
-   #                 print ('processing')
                     continue
                 else: # finished
                     if rc == 0: # finished successfully
@@ -65,7 +51,6 @@ class ProcBucket:
     def add_queue(self, fn, fnargs, saving_loc=None):
         '''Adds procs to queue and blocks if already we are busy'''
         self.total += 1
-   #     print ('total', self.total)
         while True:
             rtrn_str = "Running...\n" \
                         + f"Successful: {self.finished}/{self.total}\n"\

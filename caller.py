@@ -64,7 +64,7 @@ for j, fnames_sel in enumerate(final):
     procs = [] # processes
     for i, fname_sel in enumerate(fnames_sel):
         # telling python pfile to run ith test
-        cmd = f'aria2c -d {args.down_dir} -j {args.jobs} -x {args.jobs} {fname_sel}'
+        cmd = f'python called.py'
         # print (cmd)
         cmd = cmd.split()
         print (f'Downloading {j*n + i}/{count_fnames}!')
