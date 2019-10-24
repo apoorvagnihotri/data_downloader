@@ -1,3 +1,5 @@
+from subprocess import Popen, PIPE
+
 import pandas as pd
 import time
 import os
@@ -16,7 +18,7 @@ def write_log(proc, saving_loc):
         f.write(stderr)
 
 class ProcBucket:
-    """helpful for haing `num` number of subprocesses alive and computing"""
+    """helpful for having `num` number of subprocesses alive and computing"""
     def __init__(self, num, sleep_time):
         self.total = 0
         self.finished = 0
@@ -46,9 +48,12 @@ class ProcBucket:
                     self.saving_locs[i] = None
                     return i
         return None # none empty
-                
+
+    def _create_proc(self, cmd):
+        '''for creating specific process which doesn't print on stdout'''
+        return Popen(cmd.split(), stdout=PIPE, stderr=PIPE) 
         
-    def add_queue(self, fn, fnargs, saving_loc=None):
+    def add_queue(self, cmd, saving_loc=None):
         '''Adds procs to queue and blocks if already we are busy'''
         self.total += 1
         while True:
@@ -59,7 +64,7 @@ class ProcBucket:
             if ix is None: # all are busy
                 time.sleep(self.sleep_time)
             else:
-                self.procs[ix] = fn(*fnargs) # run the function that returns proc
+                self.procs[ix] = self._create_proc(cmd)
                 self.saving_locs[ix] = saving_loc
                 return rtrn_str
             
